@@ -1,0 +1,26 @@
+name: gsu
+on:
+  workflow_dispatch:
+
+jobs:
+    update_submodules:
+        name: 'Updates submodules'
+        runs-on: ubuntu-latest
+        steps:
+        - name: Check out app
+          uses: actions/checkout@v2
+          with:
+            submodules: true
+            token: ${{ secrets.REPO_SECRET }}
+        - name: Update submodules
+          run: |
+            git pull --recurse-submodules
+            git submodule update --remote --recursive
+        - name: Commit bumped build code
+          run: |
+              git remote add github "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git"
+              git pull github ${GITHUB_REF} --ff-only
+              git commit -a -m "[ci skip] [CI] Bump iOS build code"
+              git push -f github HEAD:${GITHUB_REF}
+
+

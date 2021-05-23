@@ -1,6 +1,7 @@
 name: gsu
 on:
-  workflow_dispatch:
+  schedule:
+  - cron: "14 03 * * *"
 
 jobs:
     update_submodules:
